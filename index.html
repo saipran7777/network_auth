@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>IITM NETWORK AUTHENTICATOR</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <section class="container">
+   <div class="login">
+     <h1>Enter Your LDAP Credentials And Login To Authenticate</h1>
+     <form action="javascript:authenticate();">
+       <p><input type="text" id="roll" name="login" value="" placeholder="Eg:CE14B016"></p>
+       <p><input type="password" id="pass" name="password" value="" placeholder="Password"></p>
+       <p class="remember_me">
+         <label>
+           <input type="checkbox" name="remember_me" id="remember_me">
+           Remember me
+         </label>
+       </p>
+       <p class="submit"><input type="submit" name="commit" value="Login"></p>
+       <button id="logout" onclick="logOut()" type="button" name="button">Logout</button>
+     </form>
+   </div>
+
+   <div class="login-help">
+     <p>&copy; Institute Webops</p>
+   </div>
+ </section>
+
+  </body>
+  <!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+  <script src="jquery.min.js"></script>
+  <script>
+    // You can also require other files to run in this process
+    require('./renderer.js')
+
+var IITMNetworkAuth = require('iitm-network-auth');
+
+    function authenticate() {
+      var roll = $("#roll").val();
+      var pass = $("#pass").val();
+      console.log(roll+"::"+pass);
+      var type = "nfw";
+
+      var auth = new IITMNetworkAuth(roll,pass,type);
+      auth.login();
+
+      var emitter = auth.get_emitter();
+
+      emitter.on('log_in', function (e) {
+        console.log(e.data); // log details to the console
+      });
+
+      var logged_in = auth.is_logged_in();
+      console.log(logged_in);
+
+    }
+    function logOut() {
+      var auth = new IITMNetworkAuth(roll,pass,type);
+      auth.logout();
+    }
+
+  </script>
+</html>
