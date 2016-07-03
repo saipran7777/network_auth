@@ -36,32 +36,47 @@
   <script src="jquery.min.js"></script>
   <script>
     // You can also require other files to run in this process
-    require('./renderer.js')
-
-var IITMNetworkAuth = require('iitm-network-auth');
-
+    require('./renderer.js');
+    var IITMNetworkAuth = require('iitm-network-auth');
+    var type = "nfw";
+    auth = "test";
     function authenticate() {
-      var roll = $("#roll").val();
-      var pass = $("#pass").val();
+      roll = $("#roll").val();
+      pass = $("#pass").val();
       console.log(roll+"::"+pass);
-      var type = "nfw";
-
-      var auth = new IITMNetworkAuth(roll,pass,type);
+      auth = new IITMNetworkAuth(roll,pass,type);
+      auth.set_credentials(roll,pass);
+      emitter = auth.get_emitter();
+      logIn()
+    }
+    function logIn() {
+    //  auth.logout();
       auth.login();
-
-      var emitter = auth.get_emitter();
-
+      startRefresh();
       emitter.on('log_in', function (e) {
         console.log(e.data); // log details to the console
       });
-
-      var logged_in = auth.is_logged_in();
-      console.log(logged_in);
-
     }
     function logOut() {
-      var auth = new IITMNetworkAuth(roll,pass,type);
-      auth.logout();
+      if (auth == "test") {
+        console.log("Login first");
+      }
+      else {
+        auth.stop_refresh();
+        auth.logout();
+        auth = "test"
+        emitter.on('log_out', function (e) {
+          console.log(e.data); // log details to the console
+        });
+      }
+    }
+    function startRefresh() {
+      auth.start_refresh();
+      emitter.on('session_refresh', function (e) {
+        console.log(e.data);
+         // log details to the console
+         console.log("Started Refresh");
+      });
     }
 
   </script>
